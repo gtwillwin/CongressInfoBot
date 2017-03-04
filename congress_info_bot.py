@@ -2,10 +2,8 @@ import praw
 import config
 import time
 import os
-
-#sheet = client.open('Legislators 2017').sheet1
-#legislators = sheet.get_all_records()
-#print(legislators)
+import requests
+import yaml
 
 
 def authenticate():
@@ -21,10 +19,21 @@ def authenticate():
 
 def run_bot():
     reddit = authenticate()
+    names = get_legislators()
     for mention in reddit.inbox.mentions(limit=25):
-        mention.reply(
-            "Placeholder"
-            )
+        for name in names:
+            if name in mention.body:
+                mention.reply(
+                    "Placeholder"
+                    )
+        time.sleep(10)
+
+
+def get_legislators():
+    response = requests.get('https://raw.githubusercontent.com/unitedstates/congress-legislators/master/legislators-current.yaml')
+    legislators = yaml.load(response.content)
+    names = legislators[0]['name']['official_full']
+    return names
 
 
 if __name__ == '__main__':
