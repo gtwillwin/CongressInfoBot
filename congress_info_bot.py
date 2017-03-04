@@ -1,3 +1,6 @@
+#CongressInfoBot v1.0
+#Created by gtwillwin
+
 import praw
 import config
 import time
@@ -12,7 +15,7 @@ def authenticate():
         password=config.password,
         client_id=config.client_id,
         client_secret=config.client_secret,
-        user_agent="Congress Info Bot v0.1"
+        user_agent="Congress Info Bot v1.0"
     )
     return reddit
 
@@ -31,6 +34,7 @@ def run_bot(replied_to):
                             replied_to.append(mention.id)
                             with open("replied_to.txt", "a") as f:
                                 f.write(mention.id + "\n")
+
         time.sleep(10)
 
 
@@ -58,6 +62,7 @@ def get_saved_mentions():
         with open("replied_to.txt", "r") as f:
             replied_to = f.read()
             replied_to = replied_to.split("\n")
+
     return replied_to
 
 
