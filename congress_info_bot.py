@@ -39,18 +39,27 @@ def run_bot(replied_to):
 
 
 def get_legislator_name():
-    response = requests.get('https://raw.githubusercontent.com/unitedstates/congress-legislators/master/legislators-current.yaml')
+    response = requests.get(
+        'https://raw.githubusercontent.com/unitedstates/congress-legislators/master/legislators-current.yaml'
+        )
     legislators = yaml.load(response.content)
     return legislators
 
 
 def get_legislator_info(legislator):
         return (
-            "**{name}**\n\n Phone: {phone}\n\n Fax: {fax} \n\n Address: {address}".format(
+            "##{title} {name} ({party}-{state}) \n\n **Contact:** \n\n Phone: {phone}\n\n Fax: {fax} \n\n Address: {address} \n\n Email: {contact_form} \n\n **Links:** \n\n [govtrack](https://www.govtrack.us/congress/members/{govtrack}) \n\n [VoteSmart](https://votesmart.org/candidate/political-courage-test/{votesmart})".format(
                 name=legislator['name']['official_full'],
                 phone=legislator['terms'][-1]['phone'],
                 address=legislator['terms'][-1]['address'],
-                fax=legislator['terms'][-1]['fax']
+                fax=legislator['terms'][-1]['fax'],
+                title=legislator['terms'][-1]['type'].upper(),
+                contact_form=legislator['terms'][-1]['contact_form'],
+                party=legislator['terms'][-1]['party'][0],
+                state=legislator['terms'][-1]['state'],
+                govtrack=legislator['id']['govtrack'],
+                votesmart=legislator['id']['votesmart']
+
             )
         )
 
