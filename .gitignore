@@ -2,3 +2,4 @@ __pycache__
 *.pyc
 oauth.ini
 config.py
+replied_to.txt
