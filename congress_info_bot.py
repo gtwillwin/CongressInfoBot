@@ -7,6 +7,8 @@ import time
 import os
 import requests
 import yaml
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 
 
 def authenticate():
@@ -23,17 +25,28 @@ def authenticate():
 def run_bot(replied_to):
     reddit = authenticate()
     legislators = get_legislator_name()
+    start = '"'
+    end = '"'
+    comment = "aaa"
+    list_names = []
     while True:
         for mention in reddit.inbox.mentions(limit=25):
             if mention.id not in replied_to:
+                comment = mention.body
+                comment = comment.split(start)[1].split(end)[0]
+                with open("replied_to.txt", "a") as f:
+                    f.write(mention.id + "\n")
                 for legislator in legislators:
-                        if legislator['name']['official_full'] in mention.body:
+                    list_names.append(legislator['name']['official_full'])
+                person = process.extractOne(comment, list_names, scorer=fuzz.partial_ratio)
+                person = person[0]
+                for legislator in legislators:
+                    if person == legislator['name']['official_full']:
+                            print("Match Found!")
                             mention.reply(
                                 get_legislator_info(legislator)
                             )
                             replied_to.append(mention.id)
-                            with open("replied_to.txt", "a") as f:
-                                f.write(mention.id + "\n")
 
         time.sleep(10)
 
@@ -54,7 +67,7 @@ def get_legislator_info(legislator):
                 address=legislator['terms'][-1]['address'],
                 fax=legislator['terms'][-1]['fax'],
                 title=legislator['terms'][-1]['type'].upper(),
-                contact_form=legislator['terms'][-1]['contact_form'],
+                contact_form=legislator['terms'][-1].get('contact_form', "N/A"),
                 party=legislator['terms'][-1]['party'][0],
                 state=legislator['terms'][-1]['state'],
                 govtrack=legislator['id']['govtrack'],
