@@ -62,16 +62,16 @@ def get_legislator_name():
 def get_legislator_info(legislator):
         return (
             "##{title} {name} ({party}-{state}) \n\n **Contact:** \n\n Phone: {phone}\n\n Fax: {fax} \n\n Address: {address} \n\n Email: {contact_form} \n\n **Links:** \n\n [govtrack](https://www.govtrack.us/congress/members/{govtrack}) \n\n [VoteSmart](https://votesmart.org/candidate/political-courage-test/{votesmart})".format(
-                name=legislator['name']['official_full'],
-                phone=legislator['terms'][-1]['phone'],
-                address=legislator['terms'][-1]['address'],
-                fax=legislator['terms'][-1]['fax'],
+                name=legislator['name'].get('official_full'),
+                phone=legislator['terms'][-1].get('phone', 'N/A'),
+                address=legislator['terms'][-1].get('address', 'N/A'),
+                fax=legislator['terms'][-1].get('fax', 'N/A'),
                 title=legislator['terms'][-1]['type'].upper(),
-                contact_form=legislator['terms'][-1].get('contact_form', "N/A"),
+                contact_form=legislator['terms'][-1].get('contact_form', 'N/A'),
                 party=legislator['terms'][-1]['party'][0],
-                state=legislator['terms'][-1]['state'],
-                govtrack=legislator['id']['govtrack'],
-                votesmart=legislator['id']['votesmart']
+                state=legislator['terms'][-1].get('state', 'N/A'),
+                govtrack=legislator['id'].get('govtrack', 'N/A'),
+                votesmart=legislator['id'].get('votesmart', 'N/A')
 
             )
         )
