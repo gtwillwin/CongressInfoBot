@@ -71,7 +71,7 @@ def get_legislator_info(legislator):
             "* Email: {contact_form} \n\n"
             "**Links:** \n\n"
             "* [govtrack](https://www.govtrack.us/congress/members/{govtrack}) \n\n"
-            "* [nVoteSmart](https://votesmart.org/candidate/political-courage-test/{votesmart})".
+            "* [VoteSmart](https://votesmart.org/candidate/political-courage-test/{votesmart})".
             format(
                 name=legislator['name'].get('official_full'),
                 phone=legislator['terms'][-1].get('phone', 'N/A'),
