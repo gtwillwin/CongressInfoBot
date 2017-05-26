@@ -12,6 +12,7 @@ from fuzzywuzzy import process
 import config
 from util import filter
 
+
 def authenticate():
     reddit = praw.Reddit(
         username=config.username,
@@ -36,18 +37,19 @@ def run_bot(replied_to):
                 mark_applied(mention.id)
                 name = mention.body.split(start)[1].split(end)[0]
                 person = process.extractOne(name, names, scorer=fuzz.partial_ratio)[0]
-                matching_leg = filter(legislator_match, legislators)
+                matching_leg = filter(lambda x: person == x['name']['official_full'], legislators)
 
                 if matching_leg:
                     mention.reply(get_legislator_info(matching_leg))
-                           
         time.sleep(10)
 
 
 def mark_applied(comment_id):
-    with open("replied_to.txt", "a") as f:
-        f.write(comment_id + "\n")
+    if len(replied_to) > MAX_LENGTH:
+        replied_to.pop(0)
     replied_to.append(comment_id)
+    with open("replied_to.txt", "w") as f:
+        f.write("\n".join(replied_to))
 
 
 def get_legislators():
@@ -55,10 +57,6 @@ def get_legislators():
         'https://raw.githubusercontent.com/unitedstates/congress-legislators/master/legislators-current.yaml'
     )
     return yaml.load(response.content)
-
-
-def legislator_match(name, legislator):
-    return name == legislator['name']['official_full']
 
 
 def get_legislator_info(legislator):
@@ -100,7 +98,7 @@ def get_saved_mentions():
 
 
 replied_to = get_saved_mentions()
-
+MAX_LENGTH = 25
 
 if __name__ == '__main__':
     run_bot(replied_to)
